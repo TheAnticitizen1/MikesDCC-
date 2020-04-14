@@ -111,10 +111,12 @@ void checkInc()
   if (Inc_buttonState == LOW) {
           bPress = true;
           // if the current state is HIGH then the button went from off to on:
+           if (spos < 180) {
           spos = spos + 5;
           Serial.println("on");
           Serial.print("number of button pushes: ");
           Serial.println(spos);
+          }
 
     } else {
 
