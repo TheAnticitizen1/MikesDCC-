@@ -1,0 +1,203 @@
+//Include Servo Library
+#include <Servo.h>;
+
+//Include Libraryfor OLED 128 x 64
+#include <Wire.h>
+#include <Adafruit_SSD1306.h>
+#include <Adafruit_GFX.h>
+
+// OLED display TWI address
+#define OLED_ADDR   0x3C
+
+Adafruit_SSD1306 display(-1);
+
+//Error Checking
+#if (SSD1306_LCDHEIGHT != 64)
+#error("Height incorrect, please fix Adafruit_SSD1306.h!");
+#endif
+
+// Define pins for push buttons
+const int buttonPinInc = 2;
+const int buttonPinDec = 3;
+const int buttonPinCen = 4;
+ 
+//Set variables for increment button checking
+int buttonIncCounter = 0; 
+int Inc_buttonState = 0;
+int Inc_lastButtonState = 0;
+
+//Set variables for decrement button checking
+int buttonDecCounter = 0; 
+int Dec_buttonState = 0;
+int Dec_lastButtonState = 0;
+
+//Set variables for center button checking
+int buttonCenCounter = 0; 
+int Cen_buttonState = 0;
+int Cen_lastButtonState = 0;
+
+//button variable
+bool bPress = false;
+
+// variable for Servo Position
+int pos = 0;
+int spos = pos;
+
+// Define servo pin
+ const int servoPin = 8;
+ Servo servo;
+
+void setup() {
+//Serial.begin(9600);
+  
+// initializa servo
+servo.attach (servoPin);
+servo.write (pos);
+ 
+pinMode( buttonPinInc , INPUT_PULLUP);
+pinMode( buttonPinDec , INPUT_PULLUP);
+pinMode( buttonPinCen , INPUT_PULLUP);
+
+
+  
+  // initialize and clear display
+  display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
+  display.clearDisplay();
+  display.display();
+
+  // display a line of text
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  display.setCursor(0,0);
+  display.print("Servo Pos:");
+  display.setCursor(25,30);
+  display.setTextSize(4);
+  display.print(010);
+
+  // update display with all of the above graphics
+  display.display();
+}
+
+void loop() {
+  checkInc();
+  checkDec();
+  checkCen();
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(WHITE);
+  display.setCursor(0,0);
+  display.print("Servo Pos:");
+  display.setCursor(25,30);
+  display.setTextSize(4);
+  display.print(spos);
+  pos = spos;
+  servo.write(pos);
+  delay(100);
+
+  // update display with all of the above graphics
+  display.display();
+}
+
+void checkInc()
+
+{
+
+  Inc_buttonState = digitalRead(buttonPinInc);
+  
+  // compare the buttonState to its previous state
+  if (Inc_buttonState != Inc_lastButtonState) {
+
+  // if the state has changed, increment the counter
+  if (Inc_buttonState == LOW) {
+          bPress = true;
+          // if the current state is HIGH then the button went from off to on:
+          spos = spos + 5;
+          Serial.println("on");
+          Serial.print("number of button pushes: ");
+          Serial.println(spos);
+
+    } else {
+
+          // if the current state is LOW then the button went from on to off:
+          Serial.println("off");
+  }
+    // Delay a little bit to avoid bouncing
+    delay(50);
+
+  }
+
+  // save the current state as the last state, for next time through the loop
+
+  Inc_lastButtonState = Inc_buttonState;
+
+}
+
+void checkDec()
+
+{
+
+  Dec_buttonState = digitalRead(buttonPinDec);
+  
+  // compare the buttonState to its previous state
+  if (Dec_buttonState != Dec_lastButtonState) {
+
+  // if the state has changed, Decrement the counter
+  if (Dec_buttonState == LOW) {
+          bPress = true;
+          // if the current state is HIGH then the button went from off to on:
+          if (spos > 0) {
+          spos = spos - 5;
+          Serial.println("on");
+          Serial.print("number of button pushes: ");
+          Serial.println(spos);
+          }
+    } else {
+
+          // if the current state is LOW then the button went from on to off:
+          Serial.println("off");
+  }
+    // Delay a little bit to avoid bouncing
+    delay(50);
+
+  }
+
+  // save the current state as the last state, for next time through the loop
+
+  Dec_lastButtonState = Dec_buttonState;
+
+}
+
+void checkCen()
+
+{
+
+  Cen_buttonState = digitalRead(buttonPinCen);
+  
+  // compare the buttonState to its previous state
+  if (Cen_buttonState != Cen_lastButtonState) {
+
+  // if the state has changed, Cenrement the counter
+  if (Cen_buttonState == LOW) {
+          bPress = true;
+          // if the current state is HIGH then the button went from off to on:
+          spos = 90;
+          Serial.println("on");
+          Serial.print("number of button pushes: ");
+          Serial.println(spos);
+
+    } else {
+
+          // if the current state is LOW then the button went from on to off:
+          Serial.println("off");
+  }
+    // Delay a little bit to avoid bouncing
+    delay(50);
+
+  }
+
+  // save the current state as the last state, for next time through the loop
+
+  Cen_lastButtonState = Cen_buttonState;
+
+}
+
